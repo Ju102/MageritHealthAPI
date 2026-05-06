@@ -19,6 +19,9 @@ namespace MageritHealthAPI.Models
 
         public string? Notas { get; set; }
 
+        [MaxLength(2048)]
+        public string? UrlAnalitica { get; set; }
+
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
         [JsonIgnore]

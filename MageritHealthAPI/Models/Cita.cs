@@ -21,6 +21,9 @@ namespace MageritHealthAPI.Models
         [MaxLength(20)]
         public string Estado { get; set; } = "programada";
 
+        [MaxLength(2048)]
+        public string? UrlCita { get; set; }
+
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public bool Activa { get; set; } = true;
 
