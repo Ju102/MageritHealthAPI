@@ -3,6 +3,7 @@ using MageritHealthAPI.Models;
 using MageritHealthAPI.Models.DTOs;
 using MageritHealthAPI.Repositories.Interfaces;
 using MageritHealthAPI.Services;
+using MageritHealthAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,13 +16,15 @@ namespace MageritHealthAPI.Controllers
     {
         private readonly IAnaliticasRepository analiticasRepository;
         private readonly ITiposMedicionRepository tiposMedicionRepository;
+        private readonly IExportService exportService;
         private readonly SimuladorLaboratorioService simuladorService;
         private readonly UserTokenHelper userTokenHelper;
 
-        public AnaliticasController(IAnaliticasRepository analiticasRepository, ITiposMedicionRepository tiposMedicionRepository, UserTokenHelper userTokenHelper, SimuladorLaboratorioService simuladorService)
+        public AnaliticasController(IAnaliticasRepository analiticasRepository, ITiposMedicionRepository tiposMedicionRepository, IExportService exportService, UserTokenHelper userTokenHelper, SimuladorLaboratorioService simuladorService)
         {
             this.analiticasRepository = analiticasRepository;
             this.tiposMedicionRepository = tiposMedicionRepository;
+            this.exportService = exportService;
             this.userTokenHelper = userTokenHelper;
             this.simuladorService = simuladorService;
         }
@@ -297,6 +300,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (finalizado)
                 {
+                    await this.exportService.GenerarInformeAnaliticaPdfAsync(id);
                     return Ok(new { mensaje = "Analítica completada y resultados guardados con éxito." });
                 }
                 else

@@ -2,6 +2,7 @@
 using MageritHealthAPI.Models;
 using MageritHealthAPI.Models.DTOs;
 using MageritHealthAPI.Repositories.Interfaces;
+using MageritHealthAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,13 @@ namespace MageritHealthAPI.Controllers
     public class CitasController : ControllerBase
     {
         private readonly ICitasRepository citasRepository;
+        private readonly IExportService exportService;
         private readonly UserTokenHelper userTokenHelper;
 
-        public CitasController(ICitasRepository citasRepository, UserTokenHelper userTokenHelper)
+        public CitasController(ICitasRepository citasRepository, IExportService exportService, UserTokenHelper userTokenHelper)
         {
             this.citasRepository = citasRepository;
+            this.exportService = exportService;
             this.userTokenHelper = userTokenHelper;
         }
 
@@ -353,7 +356,11 @@ namespace MageritHealthAPI.Controllers
             try
             {
                 bool finalizado = await this.citasRepository.UpdateEstadoCitaAsync(id, "completada", false);
-                if (finalizado) return Ok(new { mensaje = "Cita finalizada." });
+                if (finalizado)
+                {
+                    await this.exportService.GenerarInformeCitaPdfAsync(id);
+                    return Ok(new { mensaje = "Cita finalizada." });
+                }
 
                 return NotFound(new { mensaje = "Cita no encontrada." });
             }
