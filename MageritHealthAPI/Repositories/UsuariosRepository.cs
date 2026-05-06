@@ -23,7 +23,7 @@ namespace MageritHealthAPI.Repositories
         {
             var query = this.context.Usuarios
                 .Include(u => u.Especialidad)
-                .AsNoTracking() // Turbo activado
+                .AsNoTracking()
                 .AsQueryable();
 
             if (activos) query = query.Where(u => u.Activo == true);
@@ -222,6 +222,13 @@ namespace MageritHealthAPI.Repositories
 
             usuario.Activo = activo;
             return await this.context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Usuario> FindUsuarioByEmailAsync(string email)
+        {
+            return await this.context.Usuarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

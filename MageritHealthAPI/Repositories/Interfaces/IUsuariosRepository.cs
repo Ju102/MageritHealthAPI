@@ -8,6 +8,7 @@ namespace MageritHealthAPI.Repositories.Interfaces
         // -- GETs --
         Task<List<Usuario>> GetUsuariosAsync(string? dni = null, string? rol = null, bool activos = true);
         Task<Usuario> FindUsuarioByIdAsync(int idUsuario);
+        Task<Usuario> FindUsuarioByEmailAsync(string email);
 
         // Doctor
         Task<List<Usuario>> GetPacientesByIdDoctorAsync(int idDoctor);

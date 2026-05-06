@@ -301,8 +301,6 @@ namespace MageritHealthAPI.Controllers
         {
             try
             {
-                // Inyectamos el ID de la URL y mapeamos. 
-                // Se acabó el "Doble Fetch" (FindUsuarioByIdAsync antes de llamar al Repo).
                 Usuario usuarioUpdate = new Usuario
                 {
                     IdUsuario = id,
@@ -397,7 +395,6 @@ namespace MageritHealthAPI.Controllers
         {
             try
             {
-                // Ahora el repositorio se encarga de buscar el email correcto en la BD.
                 bool success = await this.usuariosRepository.ResetPasswordUsuarioAsync(id);
 
                 if (!success) return NotFound(new { mensaje = "Usuario no encontrado." });

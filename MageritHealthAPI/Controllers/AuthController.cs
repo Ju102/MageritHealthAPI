@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MageritHealthAPI.Controllers
 {
@@ -86,6 +87,27 @@ namespace MageritHealthAPI.Controllers
             {
                 return StatusCode(500, new { mensaje = "Error al intentar iniciar sesión.", detalle = ex.Message });
             }
+        }
+
+        [HttpPut]
+        [Route("[action]")]
+        public async Task<ActionResult> ResetPassword(string email)
+        {
+            Usuario usuario = await this.usuariosRepository.FindUsuarioByEmailAsync(email);
+
+            if (usuario == null)
+            {
+                return NotFound(new { mensaje = "No se encontró un usuario con ese email." });
+            }
+
+            bool reseteado = await this.usuariosRepository.ResetPasswordUsuarioAsync(usuario.IdUsuario);
+
+            if (!reseteado)
+            {
+                return StatusCode(500, new { mensaje = "Error al intentar resetear la contraseña." });
+            }
+
+            return Ok(new { mensaje = "Password reseteada." });
         }
     }
 }
