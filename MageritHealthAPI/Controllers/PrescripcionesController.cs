@@ -70,6 +70,35 @@ namespace MageritHealthAPI.Controllers
         }
 
         [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<List<DetailsPrescripcionModel>>> PrescripcionesByIdCita(int id)
+        {
+            try
+            {
+                List<Prescripcion> prescripciones = await this.prescripcionesRepository.GetPrescripcionesByIdCitaAsync(id);
+
+                if (prescripciones == null)
+                {
+                    return NotFound(new { mensaje = $"No se encontraron las prescripciones con IdCita {id}." });
+                }
+
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                if (userRol == "paciente" && prescripciones[0].Cita?.IdPaciente != userId) return Forbid();
+                if (userRol == "doctor" && prescripciones[0].Cita?.IdDoctor != userId) return Forbid();
+
+                return Ok(prescripciones.Select(MapToDetails).ToList());
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener la prescripción.", detalle = ex.Message });
+            }
+        }
+
+        [HttpGet]
         [Route("[action]/{idPaciente:int}")]
         public async Task<ActionResult<List<DetailsPrescripcionModel>>> GetPrescripcionesPaciente(int idPaciente)
         {
@@ -81,7 +110,30 @@ namespace MageritHealthAPI.Controllers
 
                 if (userRol == "paciente" && idPaciente != userId) return Forbid();
 
-                List<Prescripcion> prescripciones = await this.prescripcionesRepository.GetPrescripcionesByPacienteIdAsync(idPaciente);
+                List<Prescripcion> prescripciones = await this.prescripcionesRepository.GetPrescripcionesByIdPacienteAsync(idPaciente);
+
+                return Ok(prescripciones.Select(MapToDetails).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener el historial de prescripciones.", detalle = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "doctor, admin")]
+        [HttpGet]
+        [Route("[action]/{idDoctor:int}")]
+        public async Task<ActionResult<List<DetailsPrescripcionModel>>> GetPrescripcionesDoctor(int idDoctor)
+        {
+            try
+            {
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                if (userRol == "paciente" || userRol == "doctor" && idDoctor != userId) return Forbid();
+
+                List<Prescripcion> prescripciones = await this.prescripcionesRepository.GetPrescripcionesByIdDoctorAsync(idDoctor);
 
                 return Ok(prescripciones.Select(MapToDetails).ToList());
             }

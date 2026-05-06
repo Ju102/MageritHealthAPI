@@ -4,9 +4,13 @@ namespace MageritHealthAPI.Repositories.Interfaces
 {
     public interface IPrescripcionesRepository
     {
-        public Task<List<Prescripcion>> GetPrescripcionesByPacienteIdAsync(int pacienteId);
+        Task<List<Prescripcion>> GetPrescripcionesByIdDoctorAsync(int idDoctor);
 
-        public Task<Prescripcion> GetPrescripcionByIdAsync(int id);
+        Task<List<Prescripcion>> GetPrescripcionesByIdPacienteAsync(int idPaciente);
+
+        Task<List<Prescripcion>> GetPrescripcionesByIdCitaAsync(int idCita);
+
+        Task<Prescripcion> GetPrescripcionByIdAsync(int id);
 
         Task<bool> CreatePrescripcionAsync(Prescripcion prescripcion);
         

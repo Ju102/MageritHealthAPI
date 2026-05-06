@@ -23,13 +23,34 @@ namespace MageritHealthAPI.Repositories
                 .FirstOrDefaultAsync(p => p.IdPrescripcion == id);
         }
 
-        public async Task<List<Prescripcion>> GetPrescripcionesByPacienteIdAsync(int pacienteId)
+        public async Task<List<Prescripcion>> GetPrescripcionesByIdCitaAsync(int idCita)
         {
             return await this.context.Prescripciones
                 .Include(p => p.Cita)
                 .Include(p => p.Medicamento)
                 .AsNoTracking()
-                .Where(p => p.Cita.IdPaciente == pacienteId)
+                .Where(p => p.Cita.IdCita == idCita)
+                .ToListAsync();
+        }
+
+
+        public async Task<List<Prescripcion>> GetPrescripcionesByIdDoctorAsync(int idDoctor)
+        {
+            return await this.context.Prescripciones
+                .Include(p => p.Cita)
+                .Include(p => p.Medicamento)
+                .AsNoTracking()
+                .Where(p => p.Cita.IdDoctor == idDoctor)
+                .ToListAsync();
+        }
+
+        public async Task<List<Prescripcion>> GetPrescripcionesByIdPacienteAsync(int idPaciente)
+        {
+            return await this.context.Prescripciones
+                .Include(p => p.Cita)
+                .Include(p => p.Medicamento)
+                .AsNoTracking()
+                .Where(p => p.Cita.IdPaciente == idPaciente)
                 .ToListAsync();
         }
 
