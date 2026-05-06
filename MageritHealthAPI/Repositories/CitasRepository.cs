@@ -38,7 +38,7 @@ namespace MageritHealthAPI.Repositories
             var query = this.context.Citas
                 .Include(c => c.Paciente)
                 .Include(c => c.Doctor)
-                .AsNoTracking() // ¡Turbo activado!
+                .AsNoTracking()
                 .Where(c => c.IdDoctor == idDoctor && c.Activa == true);
 
             if (fecha.HasValue)

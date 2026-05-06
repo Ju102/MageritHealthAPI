@@ -94,6 +94,56 @@ namespace MageritHealthAPI.Controllers
         }
 
         [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<List<ListCitasModel>>> CitasPaciente(int id, [FromQuery] DateTime? fecha)
+        {
+            try
+            {
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                List<Cita> citas = new List<Cita>();
+
+                if (userRol == "paciente" && userId != id)
+                    return Forbid();
+
+                citas = await this.citasRepository.GetProximasCitasByIdPacienteAsync(id, fecha);
+
+                return Ok(citas.Select(MapToResumen).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<List<ListCitasModel>>> CitasDoctor(int id, [FromQuery] DateTime? fecha)
+        {
+            try
+            {
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                List<Cita> citas = new List<Cita>();
+
+                if (userRol == "paciente" || (userRol == "doctor" && userId != id))
+                    return Forbid();
+
+                citas = await this.citasRepository.GetProximasCitasByIdDoctorAsync(id, fecha);
+
+                return Ok(citas.Select(MapToResumen).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+            }
+        }
+
+        [HttpGet]
         [Route("[action]")]
         public async Task<ActionResult<List<ListCitasModel>>> MisProximasCitas([FromQuery] DateTime? fecha)
         {
