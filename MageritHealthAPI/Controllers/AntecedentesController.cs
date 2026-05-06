@@ -85,7 +85,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetHistorialPaciente), new { idPaciente = model.IdPaciente }, new { mensaje = "Antecedente registrado." });
+                    return CreatedAtAction(nameof(GetHistorialPaciente), new { mensaje = "Antecedente registrado." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar el antecedente." });

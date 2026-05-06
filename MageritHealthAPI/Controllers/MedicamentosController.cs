@@ -103,15 +103,14 @@ namespace MageritHealthAPI.Controllers
                     PrincipioActivo = model.PrincipioActivo,
                     Concentracion = model.Concentracion,
                     Formato = model.Formato,
-                    Activo = true // Asumimos que al crearlo está activo por defecto, ajusta según tu lógica
+                    Activo = true
                 };
 
                 bool creado = await this.medicamentosRepository.CreateMedicamentoAsync(medicamento);
 
                 if (creado)
                 {
-                    // Devolvemos 201 Created apuntando al endpoint Get(id)
-                    return CreatedAtAction(nameof(Get), new { id = medicamento.IdMedicamento }, new { mensaje = "Medicamento creado con éxito." });
+                    return CreatedAtAction(nameof(Get), new { mensaje = "Medicamento creado con éxito." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar el medicamento en la base de datos." });

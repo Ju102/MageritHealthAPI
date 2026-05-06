@@ -84,7 +84,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetByPaciente), new { idPaciente = model.IdPaciente }, new { mensaje = "Información clínica creada." });
+                    return CreatedAtAction(nameof(GetByPaciente), new { mensaje = "Información clínica creada." });
                 }
 
                 return BadRequest(new { mensaje = "El paciente ya tiene una ficha clínica o hubo un error al guardarla." });

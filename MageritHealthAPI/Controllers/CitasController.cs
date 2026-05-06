@@ -239,7 +239,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetCitaById), new { id = nuevaCita.IdCita }, new { mensaje = "Cita creada correctamente." });
+                    return CreatedAtAction(nameof(GetCitaById), new { mensaje = "Cita creada correctamente." });
                 }
 
                 return BadRequest(new { mensaje = "No se pudo crear la cita en la base de datos." });

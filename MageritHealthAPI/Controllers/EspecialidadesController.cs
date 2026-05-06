@@ -89,7 +89,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetEspecialidadById), new { id = especialidad.IdEspecialidad }, new { mensaje = "Especialidad creada con éxito." });
+                    return CreatedAtAction(nameof(GetEspecialidadById), new { mensaje = "Especialidad creada con éxito." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar la especialidad en la base de datos." });

@@ -53,13 +53,12 @@ namespace MageritHealthAPI.Controllers
                     return NotFound(new { mensaje = $"No se encontró la prescripción con ID {id}." });
                 }
 
-                // Validación de seguridad (IDOR)
                 var userInfo = this.userTokenHelper.GetInfoUser();
-                int myId = int.Parse(userInfo.IdUsuario);
-                string myRol = userInfo.Rol.ToLower();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
 
-                if (myRol == "paciente" && prescripcion.Cita?.IdPaciente != myId) return Forbid();
-                if (myRol == "doctor" && prescripcion.Cita?.IdDoctor != myId) return Forbid();
+                if (userRol == "paciente" && prescripcion.Cita?.IdPaciente != userId) return Forbid();
+                if (userRol == "doctor" && prescripcion.Cita?.IdDoctor != userId) return Forbid();
 
                 return Ok(this.MapToDetails(prescripcion));
             }
@@ -167,7 +166,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetById), new { id = prescripcion.IdPrescripcion }, new { mensaje = "Prescripción creada." });
+                    return CreatedAtAction(nameof(GetById), new { mensaje = "Prescripción creada." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar la prescripción." });

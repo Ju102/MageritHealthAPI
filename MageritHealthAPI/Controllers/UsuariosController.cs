@@ -214,7 +214,7 @@ namespace MageritHealthAPI.Controllers
 
                 bool creado = await this.usuariosRepository.InsertUsuarioAsync(usuario);
 
-                if (creado) return CreatedAtAction(nameof(Get), new { id = usuario.IdUsuario }, new { mensaje = "Admin creado." });
+                if (creado) return CreatedAtAction(nameof(Get), new { mensaje = "Admin creado." });
                 return BadRequest(new { mensaje = "No se pudo crear el admin." });
             }
             catch (Exception ex)
@@ -250,7 +250,7 @@ namespace MageritHealthAPI.Controllers
 
                 bool creado = await this.usuariosRepository.InsertUsuarioAsync(usuario);
 
-                if (creado) return CreatedAtAction(nameof(Get), new { id = usuario.IdUsuario }, new { mensaje = "Doctor creado." });
+                if (creado) return CreatedAtAction(nameof(Get), new { mensaje = "Doctor creado." });
                 return BadRequest(new { mensaje = "No se pudo crear el doctor." });
             }
             catch (Exception ex)
@@ -285,7 +285,7 @@ namespace MageritHealthAPI.Controllers
 
                 bool creado = await this.usuariosRepository.InsertUsuarioAsync(usuario);
 
-                if (creado) return CreatedAtAction(nameof(Get), new { id = usuario.IdUsuario }, new { mensaje = "Paciente creado." });
+                if (creado) return CreatedAtAction(nameof(Get), new { mensaje = "Paciente creado." });
                 return BadRequest(new { mensaje = "No se pudo crear el paciente." });
             }
             catch (Exception ex)
