@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace MageritHealth.Services
 {
-    public class ExportService
+    public class ExportService : IExportService
     {
         private readonly IAnaliticasRepository analiticasRepository;
         private readonly IPrescripcionesRepository prescripcionesRepository;
@@ -216,116 +216,116 @@ namespace MageritHealth.Services
             return document.GeneratePdf();
         }
 
-        //public async Task<byte[]> GenerarRecetasPorCitaPdfAsync(int idCita)
-        //{
-        //    var prescripciones = await this.prescripcionesRepository.GetListaPrescripcionesByIdCitaAsync(idCita);
+        public async Task<byte[]> GenerarRecetasPorCitaPdfAsync(int idCita)
+        {
+            var prescripciones = await this.prescripcionesRepository.GetPrescripcionesByIdCitaAsync(idCita);
 
-        //    if (prescripciones == null || !prescripciones.Any())
-        //    {
-        //        return null;
-        //    }
+            if (prescripciones == null || !prescripciones.Any())
+            {
+                return null;
+            }
 
-        //    var cita = prescripciones.First().Cita;
-        //    var paciente = cita.Paciente;
-        //    var doctor = cita.Doctor;
+            var cita = prescripciones.First().Cita;
+            var paciente = cita.Paciente;
+            var doctor = cita.Doctor;
 
-        //    var document = Document.Create(container =>
-        //    {
-        //        container.Page(page =>
-        //        {
-        //            page.Size(PageSizes.A5);
-        //            page.Margin(1.5f, Unit.Centimetre);
-        //            page.PageColor(Colors.White);
-        //            page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Arial));
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A5);
+                    page.Margin(1.5f, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Arial));
 
-        //            page.Header().Column(col =>
-        //            {
-        //                col.Item().Row(row =>
-        //                {
-        //                    row.RelativeItem().Text("Magerit Health").FontSize(18).SemiBold().FontColor("#0f4c81");
-        //                    row.ConstantItem(100).AlignRight().Text("RECETA MÉDICA").FontSize(12).FontColor(Colors.Grey.Medium);
-        //                });
+                    page.Header().Column(col =>
+                    {
+                        col.Item().Row(row =>
+                        {
+                            row.RelativeItem().Text("Magerit Health").FontSize(18).SemiBold().FontColor("#0f4c81");
+                            row.ConstantItem(100).AlignRight().Text("RECETA MÉDICA").FontSize(12).FontColor(Colors.Grey.Medium);
+                        });
 
-        //                col.Item().PaddingTop(10).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        col.Item().PaddingTop(10).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
 
-        //                col.Item().PaddingTop(5).Row(row =>
-        //                {
-        //                    row.RelativeItem().Column(c =>
-        //                    {
-        //                        c.Item().Text($"Dr./a. {doctor.Nombre} {doctor.Apellido1} {doctor.Apellido2}").SemiBold();
-        //                        c.Item().Text($"Nº Colegiado: {doctor.NumeroColegiado}").FontSize(9).FontColor(Colors.Grey.Darken2);
-        //                        c.Item().Text($"Especialidad: {doctor.Especialidad?.NombreEspecialidad}").FontSize(9).FontColor(Colors.Grey.Darken2);
-        //                    });
-        //                    row.RelativeItem().AlignRight().Column(c =>
-        //                    {
-        //                        c.Item().Text($"Fecha: {cita.FechaHora.ToString("dd/MM/yyyy")}").SemiBold();
-        //                    });
-        //                });
+                        col.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem().Column(c =>
+                            {
+                                c.Item().Text($"Dr./a. {doctor.Nombre} {doctor.Apellido1} {doctor.Apellido2}").SemiBold();
+                                c.Item().Text($"Nº Colegiado: {doctor.NumeroColegiado}").FontSize(9).FontColor(Colors.Grey.Darken2);
+                                c.Item().Text($"Especialidad: {doctor.Especialidad?.NombreEspecialidad}").FontSize(9).FontColor(Colors.Grey.Darken2);
+                            });
+                            row.RelativeItem().AlignRight().Column(c =>
+                            {
+                                c.Item().Text($"Fecha: {cita.FechaHora.ToString("dd/MM/yyyy")}").SemiBold();
+                            });
+                        });
 
-        //                col.Item().PaddingTop(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        col.Item().PaddingTop(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
 
-        //                col.Item().PaddingTop(5).Column(c =>
-        //                {
-        //                    c.Item().Text("DATOS DEL PACIENTE").FontSize(8).FontColor(Colors.Grey.Medium).SemiBold();
-        //                    c.Item().Text($"{paciente.Nombre} {paciente.Apellido1} {paciente.Apellido2}").FontSize(11).SemiBold();
-        //                    c.Item().Text($"DNI: {paciente.Dni} | Nº Asegurado: {paciente.NumeroAsegurado ?? "N/A"}").FontSize(9);
-        //                });
+                        col.Item().PaddingTop(5).Column(c =>
+                        {
+                            c.Item().Text("DATOS DEL PACIENTE").FontSize(8).FontColor(Colors.Grey.Medium).SemiBold();
+                            c.Item().Text($"{paciente.Nombre} {paciente.Apellido1} {paciente.Apellido2}").FontSize(11).SemiBold();
+                            c.Item().Text($"DNI: {paciente.Dni} | Nº Asegurado: {paciente.NumeroAsegurado ?? "N/A"}").FontSize(9);
+                        });
 
-        //                col.Item().Height(15);
-        //            });
+                        col.Item().Height(15);
+                    });
 
-        //            page.Content().PaddingVertical(10).Column(col =>
-        //            {
-        //                col.Item().PaddingBottom(10).Text("PLAN DE MEDICACIÓN").FontSize(12).SemiBold().FontColor("#0f4c81");
+                    page.Content().PaddingVertical(10).Column(col =>
+                    {
+                        col.Item().PaddingBottom(10).Text("PLAN DE MEDICACIÓN").FontSize(12).SemiBold().FontColor("#0f4c81");
 
-        //                foreach (var prescripcion in prescripciones)
-        //                {
-        //                    var med = prescripcion.Medicamento;
+                        foreach (var prescripcion in prescripciones)
+                        {
+                            var med = prescripcion.Medicamento;
 
-        //                    col.Item().PaddingBottom(15).Background("#f8f9fa").Border(1).BorderColor(Colors.Grey.Lighten3).Padding(10).Column(medCol =>
-        //                    {
-        //                        medCol.Item().Row(row =>
-        //                        {
-        //                            row.RelativeItem().Text(text =>
-        //                            {
-        //                                text.Span($"{med.NombreComercial} {med.Concentracion} ").FontSize(11).SemiBold().FontColor(Colors.Black);
-        //                                text.Span($"({med.Formato})").FontSize(9).FontColor(Colors.Grey.Darken2).Italic();
-        //                            });
-        //                        });
+                            col.Item().PaddingBottom(15).Background("#f8f9fa").Border(1).BorderColor(Colors.Grey.Lighten3).Padding(10).Column(medCol =>
+                            {
+                                medCol.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Text(text =>
+                                    {
+                                        text.Span($"{med.NombreComercial} {med.Concentracion} ").FontSize(11).SemiBold().FontColor(Colors.Black);
+                                        text.Span($"({med.Formato})").FontSize(9).FontColor(Colors.Grey.Darken2).Italic();
+                                    });
+                                });
 
-        //                        medCol.Item().PaddingBottom(5).Text(med.PrincipioActivo).FontSize(8).FontColor(Colors.Grey.Medium);
+                                medCol.Item().PaddingBottom(5).Text(med.PrincipioActivo).FontSize(8).FontColor(Colors.Grey.Medium);
 
-        //                        medCol.Item().Text(text =>
-        //                        {
-        //                            text.Span("Pauta: ").SemiBold();
-        //                            text.Span(prescripcion.Instrucciones);
-        //                        });
+                                medCol.Item().Text(text =>
+                                {
+                                    text.Span("Pauta: ").SemiBold();
+                                    text.Span(prescripcion.Instrucciones);
+                                });
 
-        //                        medCol.Item().PaddingTop(5).Text(text =>
-        //                        {
-        //                            text.Span("Duración: ").FontSize(9).SemiBold();
-        //                            text.Span($"Del {prescripcion.FechaInicio.ToString("dd/MM/yyyy")} al {prescripcion.FechaFin.ToString("dd/MM/yyyy")}").FontSize(9);
-        //                        });
-        //                    });
-        //                }
-        //            });
+                                medCol.Item().PaddingTop(5).Text(text =>
+                                {
+                                    text.Span("Duración: ").FontSize(9).SemiBold();
+                                    text.Span($"Del {prescripcion.FechaInicio.ToString("dd/MM/yyyy")} al {prescripcion.FechaFin.ToString("dd/MM/yyyy")}").FontSize(9);
+                                });
+                            });
+                        }
+                    });
 
-        //            page.Footer().Column(col =>
-        //            {
-        //                col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
-        //                col.Item().PaddingTop(5).Row(row =>
-        //                {
-        //                    row.RelativeItem().Text("Firma del Facultativo:").FontSize(8).FontColor(Colors.Grey.Darken1);
-        //                });
+                    page.Footer().Column(col =>
+                    {
+                        col.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        col.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem().Text("Firma del Facultativo:").FontSize(8).FontColor(Colors.Grey.Darken1);
+                        });
 
-        //                col.Item().Height(40);
+                        col.Item().Height(40);
 
-        //                col.Item().AlignCenter().Text("Documento generado electrónicamente por Magerit Health. Válido para dispensación en farmacias.").FontSize(7).FontColor(Colors.Grey.Medium).Italic();
-        //            });
-        //        });
-        //    });
+                        col.Item().AlignCenter().Text("Documento generado electrónicamente por Magerit Health. Válido para dispensación en farmacias.").FontSize(7).FontColor(Colors.Grey.Medium).Italic();
+                    });
+                });
+            });
 
-        //    return document.GeneratePdf();
-        //}
+            return document.GeneratePdf();
+        }
     }
 }

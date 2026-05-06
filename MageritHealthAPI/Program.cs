@@ -14,16 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 // ================================================================
 // INTEGRACIÓN CON AZURE KEY VAULT
 // ================================================================
+// Se obtiene la URI de Key Vault desde la configuración
 var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
 if (!string.IsNullOrEmpty(keyVaultUri))
 {
-    // Inyección de los Secrets de Key Vault en builder.Configuration
+    // Se integran los secretos de Key Vault en la configuración de la aplicación
     builder.Configuration.AddAzureKeyVault(
         new Uri(keyVaultUri),
         new DefaultAzureCredential());
 }
 
-// Add services to the container.
+// Se añaden los servicios base al contenedor de dependencias
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
@@ -32,35 +33,39 @@ builder.Services.AddSession();
 // HELPERS Y SERVICIOS
 // ================================================================
 
-// Instancia del Helper de OAuth
+// Se instancia y registra el helper de OAuth como Singleton
 HelperActionOAuthService authHelper = new HelperActionOAuthService(builder.Configuration);
 builder.Services.AddSingleton<HelperActionOAuthService>(authHelper);
 
-// Inicializacion del Helper de cifrado
+// Se inicializa el componente de cifrado con la configuración actual
 CifradoHelper.Initialize(builder.Configuration);
 
-// Instancia de Helpers de Salts y cifrado de passwords
+// Se registran los helpers de seguridad y herramientas
 builder.Services.AddSingleton<CryptographyHelper>();
 builder.Services.AddSingleton<ToolsHelper>();
 builder.Services.AddSingleton<UserTokenHelper>();
 
+// Se inyectan los servicios de lógica de negocio con ciclo de vida Transient
 builder.Services.AddTransient<IEmailingService, EmailingService>();
+builder.Services.AddTransient<IExportService, ExportService>();
 builder.Services.AddTransient<SimuladorLaboratorioService>();
-
 builder.Services.AddTransient<IAzureBlobService, AzureBlobService>();
-builder.Services.AddTransient<ExportService>();
 
 // ================================================================
 // AUTENTICACIÓN Y BASE DE DATOS
 // ================================================================
+// Se configura el esquema de autenticación y el soporte para JWT
 builder.Services.AddAuthentication(authHelper.GetAuthenticationSchema())
     .AddJwtBearer(authHelper.GetJwtBearerOptions());
 
-// Leer la cadena de conexión
+// Se recupera la cadena de conexión de la base de datos
 string connectionString = builder.Configuration.GetConnectionString("MageritHealthConnection");
+
+// Se establece el contexto de la base de datos con SQL Server
 builder.Services.AddDbContext<MageritHealthDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Se registran los repositorios para el acceso a datos
 builder.Services.AddTransient<IAnaliticasRepository, AnaliticasRepository>();
 builder.Services.AddTransient<IAntecedentesRepository, AntecedentesRepository>();
 builder.Services.AddTransient<ICitasRepository, CitasRepository>();
@@ -72,28 +77,36 @@ builder.Services.AddTransient<IPrescripcionesRepository, PrescripcionesRepositor
 builder.Services.AddTransient<ITiposMedicionRepository, TiposMedicionRepository>();
 builder.Services.AddTransient<IUsuariosRepository, UsuariosRepository>();
 
+// Se habilitan los controladores y la generación de OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // ================================================================
-// PIPELINE DE LA APLICACIÓN
+// PIPELINE DE LA APLICACIÓN (MIDDLEWARE)
 // ================================================================
+// Se exponen los endpoints para la documentación de la API
 app.MapOpenApi();
 app.MapScalarApiReference();
+
+// Se define la redirección de la ruta raíz hacia la documentación
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/scalar");
     return Task.CompletedTask;
 });
 
+// Se configuran los middlewares del ciclo de vida de la solicitud
 app.UseSession();
 app.UseHttpsRedirection();
 
+// Se activan los mecanismos de seguridad (Autenticación y Autorización)
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Se mapean las rutas de los controladores
 app.MapControllers();
 
+// Se inicia la ejecución de la aplicación
 app.Run();

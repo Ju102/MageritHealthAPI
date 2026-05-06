@@ -1,5 +1,4 @@
-﻿// Asegúrate de importar el namespace donde tienes ClaimModel y CifradoHelper
-using MageritHealthAPI.Models.DTOs;
+﻿using MageritHealthAPI.Models.DTOs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +16,7 @@ namespace MageritHealthAPI.Helpers
 
         public HelperActionOAuthService(IConfiguration config)
         {
+            // Se recuperan los valores de emisor, audiencia y clave secreta desde la configuración
             this.Issuer = config.GetValue<string>("ApiOAuthToken:Issuer");
             this.Audience = config.GetValue<string>("ApiOAuthToken:Audience");
             this.SecretKey = config.GetValue<string>("ApiOAuthToken:SecretKey");
@@ -24,15 +24,17 @@ namespace MageritHealthAPI.Helpers
 
         public SymmetricSecurityKey GetKeyToken()
         {
+            // Se convierte la clave secreta en un arreglo de bytes y se genera la clave de seguridad
             byte[] data = Encoding.UTF8.GetBytes(this.SecretKey);
             return new SymmetricSecurityKey(data);
         }
 
         public Action<JwtBearerOptions> GetJwtBearerOptions()
         {
+            // Se definen las opciones de configuración para el middleware de JwtBearer
             Action<JwtBearerOptions> options = new Action<JwtBearerOptions>(options =>
             {
-                // Parámetros de validación estándar
+                // Se establecen los parámetros estándar para la validación del token
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -45,41 +47,41 @@ namespace MageritHealthAPI.Helpers
                     IssuerSigningKey = this.GetKeyToken()
                 };
 
-                // Intercepción del token tras validar la firma
+                // Se configura la interceptación del evento tras la validación de la firma
                 options.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
                     {
-                        // Buscamos el claim encriptado que generaste en el AuthController
+                        // Se busca el claim encriptado que contiene los datos del usuario
                         var userDataClaim = context.Principal?.FindFirst("UserData")?.Value;
 
                         if (!string.IsNullOrEmpty(userDataClaim))
                         {
                             try
                             {
-                                // Desencriptamos el string (Asegúrate de que el método se llame así en tu CifradoHelper)
+                                // Se desencripta la cadena obtenida mediante el helper de cifrado
                                 string decryptedJson = CifradoHelper.DescifrarString(userDataClaim);
 
-                                // Deserializamos al modelo
+                                // Se realiza la deserialización del JSON al modelo de datos
                                 var userInfo = JsonConvert.DeserializeObject<ClaimModel>(decryptedJson);
 
                                 if (userInfo != null)
                                 {
-                                    // Creamos los Claims nativos de .NET para Rol e ID
+                                    // Se genera una lista de claims nativos de .NET para el Rol y el ID
                                     var claims = new List<Claim>
                                     {
                                         new Claim(ClaimTypes.Role, userInfo.Rol),
                                         new Claim(ClaimTypes.NameIdentifier, userInfo.IdUsuario)
                                     };
 
-                                    // Añadimos esta nueva identidad al contexto de la petición actual
+                                    // Se crea la nueva identidad y se añade al Principal de la petición actual
                                     var appIdentity = new ClaimsIdentity(claims);
                                     context.Principal?.AddIdentity(appIdentity);
                                 }
                             }
                             catch (Exception)
                             {
-                                // Si alguien manipula el string o falla la desencriptación, rechazamos la petición
+                                // Se rechaza la petición en caso de fallo en la desencriptación o manipulación
                                 context.Fail("El token contiene datos inválidos o corruptos.");
                             }
                         }
@@ -94,6 +96,7 @@ namespace MageritHealthAPI.Helpers
 
         public Action<AuthenticationOptions> GetAuthenticationSchema()
         {
+            // Se configuran los esquemas de autenticación por defecto para la aplicación
             Action<AuthenticationOptions> options = new Action<AuthenticationOptions>(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
