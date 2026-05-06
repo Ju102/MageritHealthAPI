@@ -118,6 +118,7 @@ namespace MageritHealthAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "doctor, admin")]
         [HttpGet]
         [Route("[action]/{id:int}")]
         public async Task<ActionResult<List<ListCitasModel>>> CitasDoctor(int id, [FromQuery] DateTime? fecha)

@@ -97,6 +97,66 @@ namespace MageritHealthAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "doctor, admin")]
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<List<ListAnaliticasModel>>> AnaliticasDoctor(int id)
+        {
+            try
+            {
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                List<Analitica> analiticas = new List<Analitica>();
+
+                if (userRol == "paciente" || (userRol == "doctor" && userId != id))
+                {
+                    return Forbid();
+                }
+                else
+                {
+                    analiticas = await this.analiticasRepository.GetAnaliticasByIdDoctorAsync(userId);
+                }
+
+                return Ok(analiticas.Select(MapToListModel).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<List<ListAnaliticasModel>>> AnaliticasPaciente(int id)
+        {
+            try
+            {
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                List<Analitica> analiticas = new List<Analitica>();
+
+                if (userRol == "paciente" && userId != id)
+                {
+                    return Forbid();
+                }
+                else
+                {
+                    analiticas = await this.analiticasRepository.GetAnaliticasByIdPacienteAsync(userId);
+                }
+
+                return Ok(analiticas.Select(MapToListModel).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+            }
+        }
+
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<DetailsAnaliticaModel>> GetAnaliticaById(int id)
         {
