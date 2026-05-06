@@ -16,12 +16,17 @@ namespace MageritHealthAPI.Controllers
         private readonly ICitasRepository citasRepository;
         private readonly IExportService exportService;
         private readonly UserTokenHelper userTokenHelper;
+        private readonly IConfiguration configuration;
+        private readonly IAzureBlobService azureBlobService;
 
-        public CitasController(ICitasRepository citasRepository, IExportService exportService, UserTokenHelper userTokenHelper)
+        public CitasController(ICitasRepository citasRepository, IExportService exportService, UserTokenHelper userTokenHelper,
+            IConfiguration configuration, IAzureBlobService azureBlobService)
         {
             this.citasRepository = citasRepository;
             this.exportService = exportService;
             this.userTokenHelper = userTokenHelper;
+            this.configuration = configuration;
+            this.azureBlobService = azureBlobService;
         }
 
         #region MAPPERS (Traducciones a DTOs)
@@ -356,17 +361,29 @@ namespace MageritHealthAPI.Controllers
             try
             {
                 bool finalizado = await this.citasRepository.UpdateEstadoCitaAsync(id, "completada", false);
+
                 if (finalizado)
                 {
-                    await this.exportService.GenerarInformeCitaPdfAsync(id);
-                    return Ok(new { mensaje = "Cita finalizada." });
+                    byte[] pdfData = await this.exportService.GenerarInformeCitaPdfAsync(id);
+
+                    if (pdfData != null)
+                    {
+                        string container = this.configuration["AzureStorageConfig:ContainerPDFs"];
+                        string fileName = $"informe_cita_{id}_{DateTime.UtcNow.Ticks}.pdf";
+
+                        string urlPdf = await this.azureBlobService.UploadFileAsync(pdfData, fileName, container, "application/pdf");
+
+                        await this.citasRepository.UpdateUrlInformeCitaAsync(id, urlPdf);
+                    }
+
+                    return Ok(new { mensaje = "Cita finalizada e informe médico generado correctamente." });
                 }
 
-                return NotFound(new { mensaje = "Cita no encontrada." });
+                return NotFound(new { mensaje = "No se ha podido encontrar la cita para finalizarla." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
+                return StatusCode(500, new { mensaje = $"Error crítico al finalizar la cita: {ex.Message}" });
             }
         }
         #endregion

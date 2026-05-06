@@ -21,5 +21,6 @@ namespace MageritHealthAPI.Repositories.Interfaces
         Task<bool> CreateCitaAsync(Cita cita);
         Task<bool> UpdateCitaAsync(Cita updatedCita);
         Task<bool> UpdateEstadoCitaAsync(int idCita, string estado, bool activa);
+        Task UpdateUrlInformeCitaAsync(int id, string urlPdf);
     }
 }

@@ -119,6 +119,18 @@ namespace MageritHealthAPI.Repositories
             return false;
         }
 
+        public async Task UpdateUrlDocumentoAnaliticaAsync(int id, string urlPdf)
+        {
+            Analitica analitica = await this.context.Analiticas.FirstOrDefaultAsync(a => a.IdAnalitica == id);
+
+            if (analitica != null)
+            {
+                analitica.UrlAnalitica = urlPdf;
+
+                await this.context.SaveChangesAsync();
+            }
+        }
+
         public async Task<List<Medicion>> GetListaMedicionesByIdAnaliticaAsync(int idAnalitica)
         {
             return await this.context.Mediciones

@@ -16,12 +16,14 @@ namespace MageritHealthAPI.Controllers
         private readonly IUsuariosRepository usuariosRepository;
         private readonly IAzureBlobService azureBlobService;
         private readonly UserTokenHelper userTokenHelper;
+        private readonly IConfiguration configuration;
 
-        public UsuariosController(IUsuariosRepository usuariosRepository, IAzureBlobService azureBlobService, UserTokenHelper userTokenHelper)
+        public UsuariosController(IUsuariosRepository usuariosRepository, IAzureBlobService azureBlobService, UserTokenHelper userTokenHelper, IConfiguration configuration)
         {
             this.usuariosRepository = usuariosRepository;
             this.azureBlobService = azureBlobService;
             this.userTokenHelper = userTokenHelper;
+            this.configuration = configuration;
         }
 
         #region MAPPERS
@@ -367,7 +369,9 @@ namespace MageritHealthAPI.Controllers
                 string extension = Path.GetExtension(imagen.FileName).ToLower();
                 string nombreArchivo = $"perfil_{idUsuario}_{DateTime.UtcNow.Ticks}{extension}";
 
-                string urlImagenAzure = await this.azureBlobService.UploadImageAsync(imagen, nombreArchivo);
+                string container = this.configuration["AzureStorageConfig:ContainerImagenes"];
+
+                string urlImagenAzure = await this.azureBlobService.UploadFileAsync(imagen, nombreArchivo, container);
 
                 bool actualizado = await this.usuariosRepository.UpdateUrlImagenUsuarioAsync(idUsuario, urlImagenAzure);
 

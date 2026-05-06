@@ -2,6 +2,7 @@
 using MageritHealthAPI.Models;
 using MageritHealthAPI.Models.DTOs;
 using MageritHealthAPI.Repositories.Interfaces;
+using MageritHealthAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ namespace MageritHealthAPI.Controllers
     {
         private readonly IPrescripcionesRepository prescripcionesRepository;
         private readonly UserTokenHelper userTokenHelper;
+        private readonly IExportService exportService;
 
-        public PrescripcionesController(IPrescripcionesRepository prescripcionesRepository, UserTokenHelper userTokenHelper)
+        public PrescripcionesController(IPrescripcionesRepository prescripcionesRepository, UserTokenHelper userTokenHelper, IExportService exportService)
         {
             this.prescripcionesRepository = prescripcionesRepository;
             this.userTokenHelper = userTokenHelper;
+            this.exportService = exportService;
         }
 
         #region MAPPERS
@@ -90,6 +93,45 @@ namespace MageritHealthAPI.Controllers
 
                 return Ok(prescripciones.Select(MapToDetails).ToList());
 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]/{idCita:int}")]
+        public async Task<IActionResult> DescargarRecetaPdf(int idCita)
+        {
+            try
+            {
+                List<Prescripcion> prescripciones = await this.prescripcionesRepository.GetPrescripcionesByIdCitaAsync(idCita);
+
+                if (prescripciones == null || !prescripciones.Any())
+                {
+                    return NotFound(new { mensaje = "No hay medicamentos prescritos en esta cita." });
+                }
+
+                var userInfo = this.userTokenHelper.GetInfoUser();
+                int userId = int.Parse(userInfo.IdUsuario);
+                string userRol = userInfo.Rol.ToLower();
+
+                var cita = prescripciones.First().Cita;
+
+                if (userRol == "paciente" && cita?.IdPaciente != userId) return Forbid();
+
+                if (userRol == "doctor" && cita?.IdDoctor != userId) return Forbid();
+
+                byte[] pdfData = await this.exportService.GenerarRecetasPorCitaPdfAsync(idCita);
+
+                if (pdfData == null)
+                {
+                    return StatusCode(500, new { mensaje = "Hubo un error al generar el documento de la receta." });
+                }
+
+                string fileName = $"Receta_Medica_Cita_{idCita}_{DateTime.Now.ToString("yyyyMMdd")}.pdf";
+                return File(pdfData, "application/pdf", fileName);
             }
             catch (Exception ex)
             {

@@ -16,6 +16,8 @@ namespace MageritHealthAPI.Repositories.Interfaces
 
         Task<bool> UpdateEstadoAnaliticaAsync(int idAnalitica, string estado);
 
+        Task UpdateUrlDocumentoAnaliticaAsync(int id, string urlPdf);
+
         Task<bool> FinalizarAnaliticaAsync(int idAnalitica, List<Medicion> mediciones);
 
         Task<List<Medicion>> GetListaMedicionesByIdAnaliticaAsync(int idAnalitica);

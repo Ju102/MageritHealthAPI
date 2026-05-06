@@ -132,6 +132,19 @@ namespace MageritHealthAPI.Repositories
             return false;
         }
 
+        public async Task UpdateUrlInformeCitaAsync(int id, string urlPdf)
+        {
+            Cita cita = await this.context.Citas.FirstOrDefaultAsync(c => c.IdCita == id);
+
+            if (cita != null)
+            {
+                cita.UrlCita = urlPdf;
+
+                await this.context.SaveChangesAsync();
+            }
+        }
+
+
         public async Task<List<string>> GetHorasDisponiblesDoctorAsync(int idDoctor, DateTime fechaElegida)
         {
             var citasOcupadas = await this.context.Citas

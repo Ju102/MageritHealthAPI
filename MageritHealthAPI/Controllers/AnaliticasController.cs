@@ -19,14 +19,20 @@ namespace MageritHealthAPI.Controllers
         private readonly IExportService exportService;
         private readonly SimuladorLaboratorioService simuladorService;
         private readonly UserTokenHelper userTokenHelper;
+        private readonly IAzureBlobService azureBlobService;
+        private readonly IConfiguration configuration;
 
-        public AnaliticasController(IAnaliticasRepository analiticasRepository, ITiposMedicionRepository tiposMedicionRepository, IExportService exportService, UserTokenHelper userTokenHelper, SimuladorLaboratorioService simuladorService)
+        public AnaliticasController(IAnaliticasRepository analiticasRepository, ITiposMedicionRepository tiposMedicionRepository,
+            IExportService exportService, UserTokenHelper userTokenHelper, SimuladorLaboratorioService simuladorService,
+            IConfiguration configuration, IAzureBlobService azureBlobService)
         {
             this.analiticasRepository = analiticasRepository;
             this.tiposMedicionRepository = tiposMedicionRepository;
             this.exportService = exportService;
             this.userTokenHelper = userTokenHelper;
             this.simuladorService = simuladorService;
+            this.configuration = configuration;
+            this.azureBlobService = azureBlobService;
         }
 
         #region MAPPERS
@@ -300,8 +306,21 @@ namespace MageritHealthAPI.Controllers
 
                 if (finalizado)
                 {
-                    await this.exportService.GenerarInformeAnaliticaPdfAsync(id);
-                    return Ok(new { mensaje = "Analítica completada y resultados guardados con éxito." });
+                    byte[] pdfData = await this.exportService.GenerarInformeAnaliticaPdfAsync(id);
+
+                    if (pdfData != null)
+                    {
+                        string container = this.configuration["AzureStorageConfig:ContainerPDFs"];
+                        string fileName = $"resultado_analitica_{id}_{DateTime.UtcNow.Ticks}.pdf";
+
+                        string urlPdf = await this.azureBlobService.UploadFileAsync(pdfData, fileName, container, "application/pdf");
+
+                        await this.analiticasRepository.UpdateUrlDocumentoAnaliticaAsync(id, urlPdf);
+
+                        return Ok(new { mensaje = "Analítica completada, resultados generados y PDF almacenado." });
+                    }
+
+                    return Ok(new { mensaje = "Analítica completada, pero hubo un error al generar el PDF." });
                 }
                 else
                 {
@@ -310,7 +329,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
+                return StatusCode(500, new { mensaje = $"Error interno en el proceso de laboratorio: {ex.Message}" });
             }
         }
         #endregion
