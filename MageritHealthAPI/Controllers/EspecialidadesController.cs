@@ -42,7 +42,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "No se ha podido obtener la lista de especialidades.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -62,7 +62,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "No se ha podido obtener la especialidad.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion
@@ -96,7 +96,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "No se ha podido crear la especialidad.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -129,7 +129,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "No se ha podido actualizar la especialidad.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -150,7 +150,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "No se ha podido eliminar la especialidad.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion

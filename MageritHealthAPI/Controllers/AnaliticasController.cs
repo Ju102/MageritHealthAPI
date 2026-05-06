@@ -93,7 +93,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -123,7 +123,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -152,7 +152,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -170,7 +170,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -199,7 +199,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion
@@ -233,7 +233,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -256,7 +256,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -279,7 +279,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error interno.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -306,11 +306,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    mensaje = "Error al finalizar la analítica.",
-                    detalle = ex.Message
-                });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion

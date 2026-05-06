@@ -46,7 +46,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al obtener los medicamentos.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -64,7 +64,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al obtener el medicamento.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -79,7 +79,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al obtener los medicamentos por nombre.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion
@@ -118,7 +118,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al crear el medicamento.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -159,7 +159,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al actualizar el medicamento.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -177,7 +177,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al activar el medicamento.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -195,7 +195,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al desactivar el medicamento.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion

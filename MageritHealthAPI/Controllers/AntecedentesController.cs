@@ -56,7 +56,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al obtener los antecedentes.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion
@@ -92,7 +92,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al registrar el antecedente.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -123,7 +123,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al actualizar el antecedente.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -145,7 +145,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al cambiar el estado.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -164,7 +164,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al eliminar el antecedente.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
         #endregion

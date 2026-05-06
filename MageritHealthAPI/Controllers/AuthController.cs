@@ -85,7 +85,7 @@ namespace MageritHealthAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al intentar iniciar sesión.", detalle = ex.Message });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
 
@@ -93,21 +93,28 @@ namespace MageritHealthAPI.Controllers
         [Route("[action]")]
         public async Task<ActionResult> ResetPassword(string email)
         {
-            Usuario usuario = await this.usuariosRepository.FindUsuarioByEmailAsync(email);
-
-            if (usuario == null)
+            try
             {
-                return NotFound(new { mensaje = "No se encontró un usuario con ese email." });
+                Usuario usuario = await this.usuariosRepository.FindUsuarioByEmailAsync(email);
+
+                if (usuario == null)
+                {
+                    return NotFound(new { mensaje = "No se encontró un usuario con ese email." });
+                }
+
+                bool reseteado = await this.usuariosRepository.ResetPasswordUsuarioAsync(usuario.IdUsuario);
+
+                if (!reseteado)
+                {
+                    return StatusCode(500, new { mensaje = "Error al intentar resetear la contraseña." });
+                }
+
+                return Ok(new { mensaje = "Password reseteada." });
             }
-
-            bool reseteado = await this.usuariosRepository.ResetPasswordUsuarioAsync(usuario.IdUsuario);
-
-            if (!reseteado)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { mensaje = "Error al intentar resetear la contraseña." });
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
-
-            return Ok(new { mensaje = "Password reseteada." });
         }
     }
 }
