@@ -46,6 +46,7 @@ namespace MageritHealthAPI.Controllers
                 IdAnalitica = analitica.IdAnalitica,
                 FechaHora = analitica.FechaAnalitica,
                 Estado = analitica.Estado,
+                UrlAnalitica = analitica.UrlAnalitica,
                 NombreDoctor = $"Dr/a. {analitica.Cita?.Doctor?.Nombre} {apellidoDoc}".Trim(),
                 NombrePaciente = $"{analitica.Cita?.Paciente?.Nombre} {apellidoPac}".Trim()
             };
@@ -67,7 +68,9 @@ namespace MageritHealthAPI.Controllers
                 NombrePaciente = $"{analitica.Cita?.Paciente?.Nombre} {apellidoPac}".Trim(),
                 DniPaciente = analitica.Cita?.Paciente?.Dni ?? "",
                 NombreDoctor = $"Dr/a. {analitica.Cita?.Doctor?.Nombre} {apellidoDoc}".Trim(),
-                NumeroColegiado = analitica.Cita?.Doctor?.NumeroColegiado ?? ""
+                NumeroColegiado = analitica.Cita?.Doctor?.NumeroColegiado ?? "",
+                UrlAnalitica = analitica.UrlAnalitica,
+
             };
         }
         #endregion

@@ -143,18 +143,32 @@ namespace MageritHealthAPI.Repositories
             Usuario usuario = await this.context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == model.IdUsuario);
             if (usuario == null) return false;
 
-            if (!string.IsNullOrWhiteSpace(model.Telefono))
-            {
-                usuario.Telefono = model.Telefono;
-            }
-            if (!string.IsNullOrWhiteSpace(model.Email))
-            {
-                usuario.Email = model.Email;
-            }
+            bool hasChanges = false;
+
             if (!string.IsNullOrEmpty(model.OldPassword) && !string.IsNullOrEmpty(model.NewPassword))
             {
-                await this.UpdatePasswordUsuarioAsync(model.IdUsuario, model.OldPassword, model.NewPassword);
+                bool passResult = await this.UpdatePasswordUsuarioAsync(model.IdUsuario, model.OldPassword, model.NewPassword);
+
+                if (!passResult)
+                {
+                    return false;
+                }
+                hasChanges = true;
             }
+
+            if (!string.IsNullOrWhiteSpace(model.Telefono) && usuario.Telefono != model.Telefono)
+            {
+                usuario.Telefono = model.Telefono;
+                hasChanges = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email) && usuario.Email != model.Email)
+            {
+                usuario.Email = model.Email;
+                hasChanges = true;
+            }
+
+            if (!hasChanges) return true;
 
             return await this.context.SaveChangesAsync() > 0;
         }
@@ -177,6 +191,7 @@ namespace MageritHealthAPI.Repositories
             if (credencial == null) return false;
 
             byte[] oldHash = CryptographyHelper.EncryptPassword(oldPassword, credencial.Salt);
+
             if (ToolsHelper.CompareArrays(oldHash, credencial.PasswordHash))
             {
                 string newSalt = ToolsHelper.GenerateSalt();
@@ -186,7 +201,7 @@ namespace MageritHealthAPI.Repositories
                 Usuario usuario = await this.context.Usuarios.FirstOrDefaultAsync(u => u.IdUsuario == idUsuario);
                 if (usuario != null) usuario.Pass = newPassword;
 
-                return await this.context.SaveChangesAsync() > 0;
+                return true;
             }
             return false;
         }

@@ -10,6 +10,8 @@
 
         public string Estado { get; set; }
 
+        public string UrlAnalitica { get; set; }
+
         public int IdCita { get; set; }
         public string MotivoCita { get; set; }
 

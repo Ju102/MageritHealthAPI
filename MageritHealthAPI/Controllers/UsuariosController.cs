@@ -342,7 +342,14 @@ namespace MageritHealthAPI.Controllers
         {
             try
             {
-                model.IdUsuario = this.userTokenHelper.GetUserId();
+                int userId = this.userTokenHelper.GetUserId();
+                string userRol = this.userTokenHelper.GetInfoUser().Rol;
+
+                if (model.IdUsuario != userId && userRol != "admin")
+                {
+                    return Forbid();
+                }
+
                 bool actualizado = await this.usuariosRepository.UpdatePerfilUsuarioAsync(model);
 
                 if (actualizado) return Ok(new { mensaje = "Perfil actualizado correctamente." });

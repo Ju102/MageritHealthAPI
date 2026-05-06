@@ -44,7 +44,8 @@ namespace MageritHealthAPI.Controllers
                 NombreDoctor = $"Dr/a. {cita.Doctor?.Nombre} {apellidoDoc}".Trim(),
                 EspecialidadDoctor = cita.Doctor?.Especialidad?.NombreEspecialidad ?? "General",
                 NombrePaciente = $"{cita.Paciente?.Nombre} {apellidoPac}".Trim(),
-                DniPaciente = cita.Paciente?.Dni ?? ""
+                DniPaciente = cita.Paciente?.Dni ?? "",
+                UrlCita = cita.UrlCita
             };
         }
 
@@ -65,7 +66,8 @@ namespace MageritHealthAPI.Controllers
                 NumeroColegiado = cita.Doctor?.NumeroColegiado,
                 IdPaciente = cita.IdPaciente,
                 NombrePaciente = $"{cita.Paciente?.Nombre} {apellidoPac}".Trim(),
-                DniPaciente = cita.Paciente?.Dni ?? ""
+                DniPaciente = cita.Paciente?.Dni ?? "",
+                UrlCita = cita.UrlCita
             };
         }
         #endregion

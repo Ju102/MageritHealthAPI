@@ -6,7 +6,7 @@
         
         public string Email { get; set; }
 
-        public string UrlImagen { get; set; }
+        public string? UrlImagen { get; set; }
 
         public string Dni { get; set; }
 

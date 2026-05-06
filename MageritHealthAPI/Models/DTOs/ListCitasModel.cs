@@ -17,5 +17,7 @@
         // -- Datos que usará la vista del Doctor --
         public string NombrePaciente { get; set; }
         public string DniPaciente { get; set; }
+
+        public string? UrlCita { get; set; }
     }
 }
