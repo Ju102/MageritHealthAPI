@@ -16,7 +16,7 @@ namespace MageritHealthAPI.Repositories
 
         public async Task<List<Cita>> GetCitasAsync()
         {
-            return await this.context.Citas.ToListAsync();
+            return await this.context.Citas.Include(c => c.Paciente).Include(c => c.Doctor).ToListAsync();
         }
 
         public async Task<Cita> FindCitaByIdAsync(int idCita)

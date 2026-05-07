@@ -130,6 +130,47 @@ namespace MageritHealthAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult<PerfilModel>> GetPerfilByIdUsario(int id)
+        {
+            try
+            {
+                Usuario usuario = await this.usuariosRepository.FindUsuarioByIdAsync(id);
+
+                if (usuario.Rol != "admin" && id != usuario.IdUsuario)
+                    return Forbid();
+
+                if (usuario == null) return NotFound(new { mensaje = "Usuario no encontrado." });
+
+                string apellido = usuario.Apellido2 != null ? $"{usuario.Apellido1} {usuario.Apellido2}" : $"{usuario.Apellido1}";
+
+                PerfilModel perfilModel = new PerfilModel()
+                {
+                    NombreCompleto = $"{usuario.Nombre} {apellido}".Trim(),
+                    Email = usuario.Email,
+                    Dni = usuario.Dni,
+                    UrlImagen = usuario.UrlImagen,
+                    Telefono = usuario.Telefono,
+                    FechaNacimiento = usuario.FechaNacimiento,
+                    Genero = usuario.Genero,
+                    Direccion = usuario.Direccion,
+                    Especialidad = usuario.Especialidad?.NombreEspecialidad,
+                    NumeroAsegurado = usuario.NumeroAsegurado,
+                    NumeroColegiado = usuario.NumeroColegiado,
+                    ContactoEmergenciaNombre = usuario.ContactoEmergenciaNombre,
+                    ContactoEmergenciaTelefono = usuario.ContactoEmergenciaTelefono,
+                    FechaCreacion = usuario.FechaCreacion,
+                };
+
+                return Ok(perfilModel);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
+            }
+        }
+
         [Authorize(Roles = "doctor,admin")]
         [HttpGet]
         [Route("[action]/{iddoctor:int}")]
