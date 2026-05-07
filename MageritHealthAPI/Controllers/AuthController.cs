@@ -45,7 +45,8 @@ namespace MageritHealthAPI.Controllers
                 {
                     IdUsuario = usuario.IdUsuario.ToString(),
                     NombreCompleto = usuario.Nombre + apellido,
-                    Rol = usuario.Rol
+                    Rol = usuario.Rol,
+                    UrlImagen = usuario.UrlImagen
                 };
 
                 if (usuario.Rol == "paciente")
