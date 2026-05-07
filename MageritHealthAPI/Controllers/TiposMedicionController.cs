@@ -91,7 +91,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetTipoMedicion), new { mensaje = "Tipo de medición creado." });
+                    return Ok(new { mensaje = "Tipo de medición creado." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido crear el tipo de medición." });

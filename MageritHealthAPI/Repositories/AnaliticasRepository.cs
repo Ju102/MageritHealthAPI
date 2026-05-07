@@ -62,7 +62,7 @@ namespace MageritHealthAPI.Repositories
                 int maxId = await this.context.Analiticas.MaxAsync(a => (int?)a.IdAnalitica) ?? 0;
                 analitica.IdAnalitica = maxId + 1;
                 analitica.FechaCreacion = DateTime.UtcNow;
-                analitica.Estado = "pendiente";
+                analitica.Estado = "programada";
 
                 await this.context.Analiticas.AddAsync(analitica);
                 return await this.context.SaveChangesAsync() > 0;

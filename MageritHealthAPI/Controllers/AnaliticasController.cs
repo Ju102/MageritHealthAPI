@@ -128,7 +128,7 @@ namespace MageritHealthAPI.Controllers
                 }
                 else
                 {
-                    analiticas = await this.analiticasRepository.GetAnaliticasByIdDoctorAsync(userId);
+                    analiticas = await this.analiticasRepository.GetAnaliticasByIdDoctorAsync(id);
                 }
 
                 return Ok(analiticas.Select(MapToListModel).ToList());
@@ -157,7 +157,7 @@ namespace MageritHealthAPI.Controllers
                 }
                 else
                 {
-                    analiticas = await this.analiticasRepository.GetAnaliticasByIdPacienteAsync(userId);
+                    analiticas = await this.analiticasRepository.GetAnaliticasByIdPacienteAsync(id);
                 }
 
                 return Ok(analiticas.Select(MapToListModel).ToList());
@@ -183,6 +183,45 @@ namespace MageritHealthAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult> DescargarAnalitica(int id)
+        {
+            try
+            {
+                int userId = int.Parse(this.userTokenHelper.GetInfoUser().IdUsuario);
+                string userRol = this.userTokenHelper.GetInfoUser().Rol;
+
+                Analitica analitica = await this.analiticasRepository.FindAnaliticaByIdAsync(id);
+
+                if (userRol == "paciente" && userId != analitica.Cita.IdPaciente || userRol == "doctor" && userId != analitica.Cita.IdDoctor)
+                {
+                    return Forbid();
+                }
+
+                if (analitica == null || string.IsNullOrEmpty(analitica.UrlAnalitica))
+                {
+                    return NotFound(new { mensaje = "El documento no existe o no ha sido generado aún." });
+                }
+
+                string fileName = Path.GetFileName(new Uri(analitica.UrlAnalitica).LocalPath);
+                string container = this.configuration["AzureStorageConfig:ContainerPDFs"];
+
+                Stream pdfStream = await this.azureBlobService.GetBlobStreamAsync(fileName, container);
+
+                if (pdfStream == null)
+                {
+                    return NotFound(new { mensaje = "El archivo no se encuentra en el almacenamiento." });
+                }
+
+                return File(pdfStream, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = $"Error al descargar el archivo: {ex.Message}" });
             }
         }
 
@@ -218,7 +257,7 @@ namespace MageritHealthAPI.Controllers
 
         #region POST / PUT (Escritura)
         [HttpPost]
-        [Authorize(Roles = "doctor,admin")]
+        [Authorize(Roles = "doctor, admin")]
         public async Task<ActionResult> CreateAnalitica([FromBody] CreateAnaliticaModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -251,7 +290,7 @@ namespace MageritHealthAPI.Controllers
 
         [HttpPut]
         [Route("[action]/{id:int}")]
-        public async Task<ActionResult> UpdateFecha(int id, DateTime nuevaFecha)
+        public async Task<ActionResult> UpdateFecha(int id, [FromQuery]DateTime nuevaFecha)
         {
             try
             {

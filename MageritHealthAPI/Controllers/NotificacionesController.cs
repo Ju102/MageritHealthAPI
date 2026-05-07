@@ -76,7 +76,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(Get), new { mensaje = "Notificación enviada correctamente." });
+                    return Ok( new { mensaje = "Notificación enviada correctamente." });
                 }
 
                 return BadRequest(new { mensaje = "No se pudo guardar la notificación." });

@@ -110,7 +110,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(Get), new { mensaje = "Medicamento creado con éxito." });
+                    return Ok(new { mensaje = "Medicamento creado con éxito." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar el medicamento en la base de datos." });

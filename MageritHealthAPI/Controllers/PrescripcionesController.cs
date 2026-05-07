@@ -37,7 +37,8 @@ namespace MageritHealthAPI.Controllers
                 FechaFin = p.FechaFin,
                 NombreComercial = p.Medicamento?.NombreComercial ?? "Desconocido",
                 PrincipioActivo = p.Medicamento?.PrincipioActivo ?? "Desconocido",
-                Concentracion = p.Medicamento?.Concentracion ?? "Desconocido"
+                Concentracion = p.Medicamento?.Concentracion ?? "Desconocido",
+                Activa = p.Activa
             };
         }
         #endregion
@@ -208,7 +209,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetById), new { mensaje = "Prescripción creada." });
+                    return Ok( new { mensaje = "Prescripción creada." });
                 }
 
                 return BadRequest(new { mensaje = "No se ha podido guardar la prescripción." });

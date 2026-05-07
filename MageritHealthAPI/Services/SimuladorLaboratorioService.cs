@@ -16,8 +16,7 @@ namespace MageritHealthAPI.Services
                 {
                     IdTipoMedicion = tipo.IdTipoMedicion,
                     IdAnalitica = idAnalitica,
-                    ValorMedicion = GenerarValorRealista(tipo.ValorMinimo, tipo.ValorMaximo),
-                    TipoMedicion = tipo,
+                    ValorMedicion = GenerarValorRealista(tipo.ValorMinimo, tipo.ValorMaximo)
                 };
 
                 mediciones.Add(medicion);

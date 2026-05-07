@@ -16,6 +16,10 @@
 
         public string Genero { get; set; }
 
+        public string? ContactoEmergenciaNombre { get; set; }
+
+        public string? ContactoEmergenciaTelefono { get; set; }
+
         public string Direccion { get; set; }
 
         public DateTime FechaCreacion { get; set; }

@@ -11,6 +11,8 @@
         public string Concentracion { get; set; }
         public string Instrucciones { get; set; }
 
+        public bool Activa { get; set; }
+
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
     }

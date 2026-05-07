@@ -216,6 +216,46 @@ namespace MageritHealthAPI.Controllers
                 return StatusCode(500, new { mensaje = $"Error interno: {ex.Message}" });
             }
         }
+
+        [HttpGet]
+        [Route("[action]/{id:int}")]
+        public async Task<ActionResult> DescargarInforme(int id)
+        {
+            try
+            {
+                int userId = int.Parse(this.userTokenHelper.GetInfoUser().IdUsuario);
+                string userRol = this.userTokenHelper.GetInfoUser().Rol;
+
+                Cita cita = await this.citasRepository.FindCitaByIdAsync(id);
+
+                if (userRol == "paciente" && userId != cita.IdPaciente || userRol == "doctor" && userId != cita.IdDoctor)
+                {
+                    return Forbid();
+                }
+
+                if (cita == null || string.IsNullOrEmpty(cita.UrlCita))
+                {
+                    return NotFound(new { mensaje = "El informe de la cita no existe o no ha sido generado aún." });
+                }
+
+                string fileName = Path.GetFileName(new Uri(cita.UrlCita).LocalPath);
+                string container = this.configuration["AzureStorageConfig:ContainerPDFs"];
+
+                Stream pdfStream = await this.azureBlobService.GetBlobStreamAsync(fileName, container);
+
+                if (pdfStream == null)
+                {
+                    return NotFound(new { mensaje = "El archivo no se encuentra en el almacenamiento." });
+                }
+
+                return File(pdfStream, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = $"Error al descargar el archivo: {ex.Message}" });
+            }
+        }
+
         #endregion
 
         #region POST / PUT (Escritura)
@@ -249,7 +289,7 @@ namespace MageritHealthAPI.Controllers
 
                 if (creado)
                 {
-                    return CreatedAtAction(nameof(GetCitaById), new { mensaje = "Cita creada correctamente." });
+                    return Ok(new { mensaje = "Cita creada correctamente." });
                 }
 
                 return BadRequest(new { mensaje = "No se pudo crear la cita en la base de datos." });
@@ -355,7 +395,7 @@ namespace MageritHealthAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "doctor")]
+        [Authorize(Roles = "doctor, admin")]
         [HttpPut]
         [Route("[action]/{id:int}")]
         public async Task<ActionResult> FinalizarCita(int id)

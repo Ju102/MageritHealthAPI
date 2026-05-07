@@ -6,6 +6,8 @@
         public string NombreCompleto { get; set; }
         public string Rol { get; set; }
 
+        public string? UrlImagen { get; set; }
+
         public string? NumeroAsegurado { get; set; }
 
         public string? NumeroColegiado { get; set; }
